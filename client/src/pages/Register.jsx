@@ -12,6 +12,7 @@ const Register = () => {
     const [role, setRole] = useState('dispatcher');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
     const navigate = useNavigate();
     const setUser = useStore((state) => state.setUser);
 
@@ -19,12 +20,23 @@ const Register = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
+
         try {
-            const { data } = await authService.register({ name, email, password, role });
+            const { data } = await authService.register({
+                name,
+                email,
+                password,
+                role
+            });
+
             setUser(data);
             navigate('/');
+
         } catch (err) {
-            setError(err.response?.data?.message || 'Registration failed. Please try again.');
+            setError(
+                err.response?.data?.message ||
+                'Registration failed. Please try again.'
+            );
         } finally {
             setLoading(false);
         }
@@ -38,81 +50,102 @@ const Register = () => {
                 className="w-full max-w-md"
             >
                 <div className="bg-white/10 backdrop-blur-xl p-8 rounded-[2rem] border border-white/10 shadow-2xl">
+
+                    {/* HEADER */}
                     <div className="text-center mb-8">
-                        <h1 className="text-4xl font-black text-white mb-2 tracking-tight">Join FleetFlow</h1>
-                        <p className="text-slate-400 font-medium">Create your logistics account</p>
+                        <h1 className="text-4xl font-black text-white mb-2 tracking-tight">
+                            Join FleetFlow
+                        </h1>
+                        <p className="text-slate-400 font-medium">
+                            Create your logistics account
+                        </p>
                     </div>
 
+                    {/* FORM */}
                     <form onSubmit={handleSubmit} className="space-y-4">
+
                         {error && (
                             <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm font-medium text-center">
                                 {error}
                             </div>
                         )}
 
+                        {/* NAME */}
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Full Name</label>
+                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
+                                Full Name
+                            </label>
                             <div className="relative">
                                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                                 <input
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl py-3 pl-12 pr-4 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all outline-none"
+                                    className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl py-3 pl-12 pr-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                                     placeholder="John Doe"
                                     required
                                 />
                             </div>
                         </div>
 
+                        {/* EMAIL */}
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Email Address</label>
+                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
+                                Email Address
+                            </label>
                             <div className="relative">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl py-3 pl-12 pr-4 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all outline-none"
+                                    className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl py-3 pl-12 pr-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                                     placeholder="john@example.com"
                                     required
                                 />
                             </div>
                         </div>
 
+                        {/* PASSWORD */}
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Password</label>
+                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
+                                Password
+                            </label>
                             <div className="relative">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                                 <input
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl py-3 pl-12 pr-4 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all outline-none"
+                                    className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl py-3 pl-12 pr-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                                     placeholder="••••••••"
                                     required
                                 />
                             </div>
                         </div>
 
+                        {/* ROLE */}
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Preferred Role</label>
+                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
+                                Preferred Role
+                            </label>
                             <select
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
-                                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl py-3 px-4 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all outline-none"
+                                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl py-3 px-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                             >
-                                <option value="manager">Fleet Manager</option>
+                                <option value="manager">Manager</option>
                                 <option value="dispatcher">Dispatcher</option>
-                                <option value="safety">Safety Officer</option>
-                                <option value="finance">Financial Analyst</option>
+                                <option value="finance">Finance</option>
+                                <option value="safety">Safety</option>
                             </select>
                         </div>
 
+                        {/* SUBMIT BUTTON */}
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-500/20 transition-all flex items-center justify-center gap-2 group disabled:opacity-70 mt-4"
+                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 mt-4"
                         >
                             {loading ? (
                                 <Loader2 className="animate-spin" size={20} />
@@ -122,14 +155,22 @@ const Register = () => {
                         </button>
                     </form>
 
+                    {/* FOOTER */}
                     <div className="mt-8 text-center text-sm">
-                        <span className="text-slate-500 font-medium">Already have an account? </span>
-                        <Link to="/login" className="text-indigo-400 font-bold hover:text-indigo-300 transition-colors">Sign In</Link>
+                        <span className="text-slate-500 font-medium">
+                            Already have an account?{' '}
+                        </span>
+                        <Link
+                            to="/login"
+                            className="text-indigo-400 font-bold hover:text-indigo-300 transition-colors"
+                        >
+                            Sign In
+                        </Link>
                     </div>
                 </div>
 
                 <p className="text-center mt-8 text-slate-500 text-xs font-medium uppercase tracking-[0.2em]">
-                    &copy; 2026 FleetFlow Pro &bull; Production Ready
+                    &copy; 2026 FleetFlow Pro • Production Ready
                 </p>
             </motion.div>
         </div>

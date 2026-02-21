@@ -2,9 +2,9 @@ import axios from 'axios';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
-
 });
 
+// 🔐 Attach Token Automatically
 api.interceptors.request.use((config) => {
     try {
         const user = JSON.parse(localStorage.getItem('user'));
@@ -18,12 +18,15 @@ api.interceptors.request.use((config) => {
 });
 
 
+// ================= AUTH =================
 export const authService = {
     login: (credentials) => api.post('/auth/login', credentials),
     register: (userData) => api.post('/auth/register', userData),
     getProfile: () => api.get('/auth/profile'),
 };
 
+
+// ================= VEHICLES =================
 export const vehicleService = {
     getVehicles: () => api.get('/vehicles'),
     createVehicle: (data) => api.post('/vehicles', data),
@@ -31,12 +34,16 @@ export const vehicleService = {
     deleteVehicle: (id) => api.delete(`/vehicles/${id}`),
 };
 
+
+// ================= DRIVERS =================
 export const driverService = {
     getDrivers: () => api.get('/drivers'),
     createDriver: (data) => api.post('/drivers', data),
     updateDriver: (id, data) => api.put(`/drivers/${id}`, data),
 };
 
+
+// ================= TRIPS =================
 export const tripService = {
     getTrips: () => api.get('/trips'),
     createTrip: (data) => api.post('/trips', data),
@@ -44,9 +51,19 @@ export const tripService = {
     completeTrip: (id, data) => api.put(`/trips/${id}/complete`, data),
 };
 
+
+// ================= MAINTENANCE (🔥 ADD THIS) =================
+export const maintenanceService = {
+    getMaintenanceLogs: () => api.get('/maintenance'),
+    createMaintenance: (data) => api.post('/maintenance', data),
+};
+
+
+// ================= ANALYTICS =================
 export const analyticsService = {
     getKPIs: () => api.get('/analytics/kpis'),
     getVehicleStats: () => api.get('/analytics/vehicle-stats'),
 };
+
 
 export default api;

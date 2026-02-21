@@ -1,53 +1,59 @@
 const Maintenance = require('../models/Maintenance');
 const Vehicle = require('../models/Vehicle');
-const Expense = require('../models/Expense');
 
-// @desc    Create maintenance log
-// @route   POST /api/maintenance
-// @access  Private/Safety
+// ================= CREATE MAINTENANCE =================
 const createMaintenance = async (req, res) => {
-    const { vehicleId, serviceType, cost, notes, date } = req.body;
+    try {
+        const { vehicleId, serviceType, cost, notes } = req.body;
 
-    const vehicle = await Vehicle.findById(vehicleId);
+        if (!vehicleId) {
+            return res.status(400).json({ message: 'Vehicle ID is required' });
+        }
 
-    if (!vehicle) {
-        return res.status(404).json({ message: 'Vehicle not found' });
+        const vehicle = await Vehicle.findById(vehicleId);
+        if (!vehicle) {
+            return res.status(404).json({ message: 'Vehicle not found' });
+        }
+
+        const maintenance = new Maintenance({
+            vehicle: vehicleId,
+            serviceType,
+            cost,
+            notes
+        });
+
+        const savedMaintenance = await maintenance.save();
+
+        // 🔥 Reset service cycle
+        vehicle.lastServiceOdometer = vehicle.odometer;
+        await vehicle.save();
+
+        res.status(201).json(savedMaintenance);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
     }
-
-    const maintenance = new Maintenance({
-        vehicle: vehicleId,
-        serviceType,
-        cost,
-        notes,
-        date
-    });
-
-    const createdMaintenance = await maintenance.save();
-
-    // Business Rule 5: When maintenance log created: vehicle.status = InShop
-    await Vehicle.findByIdAndUpdate(vehicleId, { status: 'InShop' });
-
-    // Add to expenses
-    const expense = new Expense({
-        vehicle: vehicleId,
-        type: 'Maintenance',
-        amount: cost,
-        date: date || Date.now()
-    });
-    await expense.save();
-
-    req.io.emit('maintenanceAlert', createdMaintenance);
-    req.io.emit('vehicleStatusUpdate', { _id: vehicleId, status: 'InShop' });
-
-    res.status(201).json(createdMaintenance);
 };
 
-// @desc    Get maintenance history for a vehicle
-// @route   GET /api/maintenance/:vehicleId
-// @access  Private
-const getMaintenanceHistory = async (req, res) => {
-    const maintenance = await Maintenance.find({ vehicle: req.params.vehicleId }).sort({ date: -1 });
-    res.json(maintenance);
+
+// ================= GET ALL MAINTENANCE LOGS =================
+const getMaintenanceLogs = async (req, res) => {
+    try {
+        const logs = await Maintenance.find()
+            .populate('vehicle')
+            .sort({ createdAt: -1 });
+
+        res.json(logs);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
 };
 
-module.exports = { createMaintenance, getMaintenanceHistory };
+
+module.exports = {
+    createMaintenance,
+    getMaintenanceLogs
+};

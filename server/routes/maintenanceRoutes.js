@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { createMaintenance, getMaintenanceHistory } = require('../controllers/maintenanceController');
-const { protect, authorize } = require('../middleware/auth');
+const {
+    createMaintenance,
+    getMaintenanceLogs
+} = require('../controllers/maintenanceController');
 
-router.route('/')
-    .post(protect, authorize('safety', 'manager'), createMaintenance);
-
-router.route('/:vehicleId')
-    .get(protect, getMaintenanceHistory);
+router.post('/', createMaintenance);
+router.get('/', getMaintenanceLogs);
 
 module.exports = router;

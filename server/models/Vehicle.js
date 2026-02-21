@@ -1,18 +1,28 @@
 const mongoose = require('mongoose');
 
 const vehicleSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    model: { type: String, required: true },
-    licensePlate: { type: String, required: true, unique: true },
-    vehicleType: { type: String, enum: ['Truck', 'Van', 'Bike'], required: true },
-    maxLoadCapacity: { type: Number, required: true }, // in kg
-    odometer: { type: Number, default: 0 },
+    name: String,
+    licensePlate: String,
+    odometer: {
+        type: Number,
+        default: 0
+    },
     status: {
         type: String,
-        enum: ['Available', 'OnTrip', 'InShop', 'Retired'],
+        enum: ['Available', 'OnTrip', 'InShop'],
         default: 'Available'
     },
-    acquisitionCost: { type: Number, required: true }
+
+    // 🔥 Maintenance Fields
+    lastServiceOdometer: {
+        type: Number,
+        default: 0
+    },
+    serviceInterval: {
+        type: Number,
+        default: 10000 // every 10,000 km
+    }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('Vehicle', vehicleSchema);

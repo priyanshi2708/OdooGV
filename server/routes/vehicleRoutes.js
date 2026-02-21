@@ -1,21 +1,36 @@
 const express = require('express');
 const router = express.Router();
+const protect = require('../middleware/authMiddleware');
+const authorize = require('../middleware/roleMiddleware');
+
 const {
     getVehicles,
-    getVehicleById,
     createVehicle,
     updateVehicle,
     deleteVehicle
 } = require('../controllers/vehicleController');
-const { protect, authorize } = require('../middleware/auth');
 
-router.route('/')
-    .get(protect, getVehicles)
-    .post(protect, authorize('manager'), createVehicle);
+router.get('/', protect, getVehicles);
 
-router.route('/:id')
-    .get(protect, getVehicleById)
-    .put(protect, authorize('manager'), updateVehicle)
-    .delete(protect, authorize('manager'), deleteVehicle);
+router.post(
+    '/',
+    protect,
+    authorize('dispatcher', 'manager', 'admin'),
+    createVehicle
+);
+
+router.put(
+    '/:id',
+    protect,
+    authorize('dispatcher', 'manager', 'admin'),
+    updateVehicle
+);
+
+router.delete(
+    '/:id',
+    protect,
+    authorize('manager', 'admin'),
+    deleteVehicle
+);
 
 module.exports = router;
