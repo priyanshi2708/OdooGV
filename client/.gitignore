@@ -1,4 +1,25 @@
-node_modules
-dist
+# Node
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# React build
+dist/
+client/dist/
+.vite/
+client/.vite/
+
+# Env files
 .env
-.vite
+client/.env
+server/.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Odoo logs/db
+*.log
+*.sqlite3
+*.db
